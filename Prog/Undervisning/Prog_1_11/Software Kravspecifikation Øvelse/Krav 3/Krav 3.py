@@ -56,9 +56,11 @@ def batt_percentage(u_batt):
     percent=normalized*100
     return percent
 
-def batteri_percent
+def batteri_percent():
     val=potmeter_adc.read()
     batteri_percentage_calc=batt_percentage(batt_voltage(val))
+    return batteri_percentage_calc
+    
 # Thingsboard connection
 client = TBDeviceMqttClient(secrets.SERVER_IP_ADDRESS, access_token = secrets.ACCESS_TOKEN)
 client.connect()                           # Connecting to ThingsBoard
@@ -69,13 +71,13 @@ print("connected to thingsboard, starting to send and receive data")
 # Main program
 while True:
     try:
-        print(f"free memory: {gc.mem_free()}") # monitor memory left
         if gc.mem_free() < 2000:          # free memory if below 2000 bytes left
             print("Garbage collected!")
             gc.collect()                  # free memory 
         if ticks_diff(ticks_ms(),ticker)>5000: # 5s non-blocking delay
-            telemetry = {"Battery Percentage" : batteri_percent}                # store telemetry in dictionary     
+            telemetry = {"Battery Percentage" : batteri_percent()}                # store telemetry in dictionary     
             client.send_telemetry(telemetry) #Sending telemetry
+            print(batteri_percent())
             ticker=ticks_ms()
     except KeyboardInterrupt:
         print("Disconnected!")

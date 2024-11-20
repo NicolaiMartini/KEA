@@ -10,12 +10,12 @@ from machine import Pin, PWM
 # Rotary encoder pins, actual A or B depends the rotary encoder hardware. If backwards swap the pin numpers
 pin_enc_a = 36
 pin_enc_b = 39
-lcd_brightness=PWM(Pin(13,Pin.OUT),duty=0)
+lcd_pin=13
 
 # OBJECTS
 rotenc_A = Pin(pin_enc_a, Pin.IN, Pin.PULL_UP)
 rotenc_B = Pin(pin_enc_b, Pin.IN, Pin.PULL_UP)
-
+lcd_brightness=PWM(Pin(lcd_pin,Pin.OUT),duty=0)
 
 # VARIABLES and CONSTANTS
 enc_state = 0                          # Encoder state control variable

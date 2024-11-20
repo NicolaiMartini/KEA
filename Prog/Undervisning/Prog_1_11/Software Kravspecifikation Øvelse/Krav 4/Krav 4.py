@@ -29,7 +29,7 @@ CCW=-1 # Constant counter clock wise rotation
 ticker_lcd=ticks_ms()
 ticker_thingsboard=ticks_ms()
 
-# Battery Linear functions for %-calculation
+# Linear functions for Battery%-calculation
 adc1=2390
 U1=4.1
 adc2=2080
