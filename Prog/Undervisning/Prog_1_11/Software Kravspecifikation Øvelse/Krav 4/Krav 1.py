@@ -1,30 +1,21 @@
 """
-Upload følgende to moduler til lib mappen på ESP32: 
-https://github.com/KEA-IT-TEKNOLOG/ittek/blob/main/lib/lcd_api.py 
-https://github.com/KEA-IT-TEKNOLOG/ittek/blob/main/lib/gpio_lcd.py 
-
-Betragt kodeeksemplet med LCD https://github.com/KEA-IT-TEKNOLOG/ittek/blob/main/examples/lcd.py 
-
-Betragt kodeeksemplet med batteri demo 
-https://github.com/KEA-IT-TEKNOLOG/ittek/blob/main/examples/batt_demo_using_pot.py 
-
-Prøv at lave en ny fil og brug delene fra de to ove
+Lav et PWM objekt som er tilknyttet GPIO 13 og navngiv det lcd_brightness sæt duty cycle til 0.
+Prøv at omskrive det så at rotary encoder anvendes til at skrue op og ned for lysintensiteten på LCD displayet. 
+Der må som sagt max være 10 forskellige lysintensiteter. (Husk at duty som default er en 10 Bit værdi)
 """
 
 from machine import Pin, PWM
-from gpio_lcd import GpioLcd
-from time import ticks_ms, ticks_diff
 
 # CONFIGURATION
 # Rotary encoder pins, actual A or B depends the rotary encoder hardware. If backwards swap the pin numpers
 pin_enc_a = 36
 pin_enc_b = 39
+lcd_pin=13
 
 # OBJECTS
 rotenc_A = Pin(pin_enc_a, Pin.IN, Pin.PULL_UP)
 rotenc_B = Pin(pin_enc_b, Pin.IN, Pin.PULL_UP)
-lcd = GpioLcd(rs_pin=Pin(27), enable_pin=Pin(25), d4_pin=Pin(33), d5_pin=Pin(32), d6_pin=Pin(21), d7_pin=Pin(22), num_lines=4, num_columns=20)
-
+lcd_brightness=PWM(Pin(lcd_pin,Pin.OUT),duty=0)
 
 # VARIABLES and CONSTANTS
 enc_state = 0                          # Encoder state control variable
@@ -34,7 +25,6 @@ counter = 0                            # A counter that is incremented/decrement
 CW = 1                                 # Constant clock wise rotation
 CCW = -1                               # Constant counter clock wise rotation
 
-ticker=ticks_ms()
 
 # FUNCTIONS
 # Rotary encoder truth table, which one to use depends the actual rotary encoder hardware
@@ -63,6 +53,16 @@ def re_full_step():
     else:
         return 0
 
+def lcd_bright_up():
+    global counter
+    global lcd_duty
+    return lcd_brightness.duty(lcd_duty)
+    
+def lcd_bright_down():
+    global counter
+    global lcd_duty
+    return lcd_brightness.duty(lcd_duty)
+
 # PROGRAM
 print("Rotary encoder test program\n")
         
@@ -72,14 +72,14 @@ while True:
 
     # Direction and counter
     counter += res
+    counter=min(max(counter,0),10)
+    lcd_duty=int(1023/10*counter)
     if res == CW:
-        if counter>99:
-            counter=100
+        lcd_bright_up()
+        print(counter)
     elif res == CCW:
-        if counter<1:
-            counter=0
-    if ticks_diff(ticks_ms(),ticker)>2000:
-        lcd.clear()
-        lcd.move_to(0,0)
-        lcd.putstr(f"{counter}% batteri")
-        ticker=ticks_ms()
+        lcd_bright_down()
+        print(counter)
+
+
+

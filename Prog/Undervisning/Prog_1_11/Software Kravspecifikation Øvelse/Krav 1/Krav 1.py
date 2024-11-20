@@ -53,6 +53,15 @@ def re_full_step():
     else:
         return 0
 
+def lcd_bright_up():
+    global counter
+    global lcd_duty
+    return lcd_brightness.duty(lcd_duty)
+    
+def lcd_bright_down():
+    global counter
+    global lcd_duty
+    return lcd_brightness.duty(lcd_duty)
 
 # PROGRAM
 print("Rotary encoder test program\n")
@@ -63,17 +72,14 @@ while True:
 
     # Direction and counter
     counter += res
+    counter=min(max(counter,0),10)
+    lcd_duty=int(1023/10*counter)
     if res == CW:
-        if counter>10:
-            counter=10
-            lcd_brightness.duty(int(1023/10*counter))
-        else:
-            lcd_brightness.duty(int(1023/10*counter))
+        lcd_bright_up()
         print(counter)
     elif res == CCW:
-        if counter<=1:
-            counter=0
-            lcd_brightness.duty(int(1023/10*counter))
-        else:
-            lcd_brightness.duty(int(1023/10*counter))
+        lcd_bright_down()
         print(counter)
+
+
+

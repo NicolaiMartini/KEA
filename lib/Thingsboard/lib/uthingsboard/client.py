@@ -8,8 +8,6 @@ import ssl
 from umqtt.robust import MQTTClient
 
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-print(ssl.PROTOCOL_TLS_CLIENT)
-print(context)
 context.verify_mode = ssl.CERT_NONE
 
 RPC_RESPONSE_TOPIC = 'v1/devices/me/rpc/response/'
@@ -252,4 +250,3 @@ class TBDeviceMqttClient:
                 print(msg, file=stream)
             else:
                 print(msg % args, file=stream)
-
