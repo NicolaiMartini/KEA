@@ -4,12 +4,14 @@ from gpio_lcd import GpioLcd
 from uthingsboard.client import TBDeviceMqttClient
 import gc
 import secrets
+import dht
 
 # PINS
-pin_enc_a=36
 pin_enc_b=39
-lcd_pin=13
+pin_enc_a=36
 potmeter_pin=34
+dht11_pin=19
+lcd_pin=13
 
 #####
 # OBJECTS
@@ -19,6 +21,7 @@ lcd_brightness=PWM(Pin(lcd_pin,Pin.OUT),duty=0)
 lcd = GpioLcd(rs_pin=Pin(27), enable_pin=Pin(25), d4_pin=Pin(33), d5_pin=Pin(32), d6_pin=Pin(21), d7_pin=Pin(22), num_lines=4, num_columns=20)
 potmeter_adc=ADC(Pin(potmeter_pin))
 potmeter_adc.atten(ADC.ATTN_11DB)
+dht11=dht.DHT11(Pin(dht11_pin))
 
 #####
 # VARIABLES AND CONSTANTS
@@ -28,6 +31,7 @@ CW=1 # Constant clock wise rotation
 CCW=-1 # Constant counter clock wise rotation
 ticker_lcd=ticks_ms()
 ticker_thingsboard=ticks_ms()
+ticker_dht11=ticks_ms()
 
 # Linear functions for Battery%-calculation
 adc1=2390
@@ -80,6 +84,20 @@ def batteri_percent():
     percent=normalized*100 # Return in percentage
     return percent
 
+# Return Celsius, C
+def dht11_temp():
+    dht11.measure()
+    tempC=dht11.temperature()
+    temperature=f"{tempC}°C"
+    return temperature
+
+# Return Humidity, %
+def dht11_hum():
+    dht11.measure()
+    hum=dht11.humidity()
+    humidity=f"{hum}%"
+    return humidity
+
 
 #####
 # Thingsboard connection
@@ -91,6 +109,9 @@ print("Connected to thingsboard, starting to send and receive data.")
 # Main Program
 while True:
     try:
+        if gc.mem_free() < 2000:          # free memory if below 2000 bytes left
+            print("Garbage collected!")
+            gc.collect()
         res = re_full_step() # Read rotary encoder
         counter+=res # In-/Decrease counter by RE
         counter=min(max(counter,0),10) # Max 10, Min 0
@@ -102,9 +123,13 @@ while True:
             lcd.move_to(0,1)
             lcd.putstr(f"Brightness: {counter} of 10")
             ticker_lcd=ticks_ms() # "Reset" non-blocking delay
+        if ticks_diff(ticks_ms(),ticker_dht11)>10000:
+            print(dht11_temp())
+            print(dht11_hum())
+            ticker_dht11=ticks_ms()
         if ticks_diff(ticks_ms(),ticker_thingsboard)>20000:
-            telemetry={"Batteri Percentage" : batteri_percent()} # Store data in telemetry for Thingsboard
-            print(batteri_percent()) # Print battery% in shell
+            telemetry={"Batteri Percentage":batteri_percent(),"Temperature":dht11_temp,"Humidity" : dht11_hum(),} # Store data in telemetry for Thingsboard
+            print("Sending Telemetry") # Print when sending data
             client.send_telemetry(telemetry) # Send telemetry to Thingsboard
             ticker_thingsboard=ticks_ms() # "Reset" non-blocking delay
     except KeyboardInterrupt:

@@ -52,15 +52,11 @@ def re_full_step():
         return CCW
     else:
         return 0
-
-def lcd_bright_up():
-    global counter
-    global lcd_duty
-    return lcd_brightness.duty(lcd_duty)
     
-def lcd_bright_down():
+def lcd_brightness():
     global counter
     global lcd_duty
+    lcd_duty=int(1023/10*counter)
     return lcd_brightness.duty(lcd_duty)
 
 # PROGRAM
@@ -73,12 +69,11 @@ while True:
     # Direction and counter
     counter += res
     counter=min(max(counter,0),10)
-    lcd_duty=int(1023/10*counter)
     if res == CW:
-        lcd_bright_up()
+        lcd_brightness()
         print(counter)
     elif res == CCW:
-        lcd_bright_down()
+        lcd_brightness()
         print(counter)
 
 
