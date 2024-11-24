@@ -27,8 +27,8 @@ pin_pb1           =  4
 pin_pb2           =  0
 
 # ROTARY ENCODER, the pushbutton is connected to the port expander
-pin_enc_a         = 39
-pin_enc_b         = 36
+pin_enc_a         = 36
+pin_enc_b         = 39
 
 # EEPROM
 pin_eeprom_scl    = 18 # Not used directly but via I2C H/W 0 bus
