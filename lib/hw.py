@@ -7,9 +7,7 @@ pin_lcd_db4       = 33
 pin_lcd_db5       = 32
 pin_lcd_db6       = 21
 pin_lcd_db7       = 22
-
 pin_lcd_contrast  = 23
-
 lcd_num_lines     =  4
 lcd_num_columns   = 20
               
