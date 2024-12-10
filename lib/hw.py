@@ -13,6 +13,11 @@ lcd_num_columns   = 20
               
 # LED1
 pin_led1          = 26
+pin_led2          = 12 # Jumpes JP1-MISO <-> JP6-GP2 eller via Port Exp.
+pin_led3          = 13 # Jumpes JP1-MOSI <-> JP6-GP3 eller via Port Exp.
+
+# BUZZER
+pin_buzzer        = 14 # Jumpes JP1-SCK <-> JP6-GP6 eller via Port Exp.
 
 # TEMPERATURE LMT84
 pin_temp          = 35

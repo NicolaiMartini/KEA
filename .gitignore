@@ -29,3 +29,17 @@ desktop.ini
 *.csv
 /Gruppe 9/.obsidian/plugins
 /Gruppe 9/Attachments
+*.vmcx
+*.vmgs
+*.iso
+*.VMRS
+*.avhdx
+*.sav
+*.vhdx
+*.2
+*.log
+*.partial
+*.1
+*.3
+*.vdi
+.xdg-volume-info
